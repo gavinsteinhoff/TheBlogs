@@ -7,7 +7,7 @@
 }
 
 @code {
-    private ApiResponse<Blog[]> _apiResponse { get; set; }
+    private ApiResponse<Blog[]> _apiResponse { get; set; } = new ApiResponse<Blog[]> { Data = new Blog[0] };
 
     protected override async Task OnInitializedAsync()
     {

@@ -5,7 +5,7 @@ namespace TheBlogs.Models;
 public class Blog
 {
     [JsonPropertyName("id")]
-    public string Id { get; } = Guid.NewGuid().ToString();
+    public string Id { get; init; } = Guid.NewGuid().ToString();
     [JsonPropertyName("writerId")]
     public string WriterId { init; get; } = string.Empty;
     [JsonPropertyName("title")]
