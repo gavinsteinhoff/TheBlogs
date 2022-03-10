@@ -1,0 +1,17 @@
+﻿@page "/"
+@inject HttpClient Http
+
+@foreach (var blog in _apiResponse.Data)
+{
+    <p>@blog.Title</p>
+}
+
+@code {
+    private ApiResponse<Blog[]> _apiResponse { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _apiResponse = await Http.GetFromJsonAsync<ApiResponse<Blog[]>>("http://localhost:7071/api/blogs") ?? new ApiResponse<Blog[]> { Data = new Blog[0] };
+    }
+
+}
