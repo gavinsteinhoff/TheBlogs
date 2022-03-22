@@ -1,0 +1,55 @@
+﻿@using System.Text.Json
+@inject IBlogApi _blogApi
+@inject IJSRuntime JS
+@page "/create"
+
+<MudGrid Spacing="2">
+    <MudItem sm="12" md="6">
+        <MudText Typo="Typo.h6">Markdown</MudText>
+        <MudTextField @ref="_textField" Margin="Margin.Normal" TextChanged="UpdatedText" T="string" Lines=50 Variant="Variant.Outlined" Immediate="true"></MudTextField>
+        <MudButton Variant="Variant.Filled" ButtonType="ButtonType.Submit" Color="Color.Primary" OnClick="CreateBlog" Class="mt-4">Submit</MudButton>
+    </MudItem>
+
+    <MudItem sm="12" md="6">
+        <MudText Typo="Typo.h6">Rendered Markdown</MudText>
+        <MudPaper Class="pa-4 mt-4" Elevation="3" Style="overflow-y:auto; height: 986px">
+            @((MarkupString)_displayText)
+        </MudPaper>
+    </MudItem>
+
+</MudGrid>
+
+@code {
+    private static readonly string _starterText = "# h1 Heading\n\n## h2 Heading\n\n### h3 Heading\n\n#### h4 Heading\n\n##### h5 Heading\n\n###### h6 Heading\n\n## Horizontal Rules\n\n___\n\n## Emphasis\n\nnormal text, **this is bold text** *this is italic text*, ~~Strike Through~~\n\n## Block Quotes\n\n\u003E Block quotes can also be nested...\n\u003E\u003E ...by using additional greater-than signs right next to each other...\n\u003E \u003E \u003E ...or with spaces between arrows.\n\n## Lists\n\nUnordered\n\n- Create a list\n- Sub-lists are made by indenting 2 spaces:\n  - Sub list 1\n  - Sub list 2\n- Very easy!\n\n## Code\n\nInline \u0060code\u0060\n\nIndented code\n\n// Some comments\nline 1 of code\nline 2 of code\nline 3 of code\n\nBlock code \u0022fences\u0022\n\n\u0060\u0060\u0060 js\nvar foo = function (bar) {\nreturn bar\u002B\u002B;\n};\n\nconsole.log(foo(5));\n\u0060\u0060\u0060\n\n## Tables\n\n| Option | Description |\n| ------ | ----------- |\n| data | path to data files to supply the data that will be passed into templates. |\n| engine | engine to be used for processing templates. Handlebars is the default. |\n| ext | extension to be used for dest files. |\n\nRight aligned columns\n\n| Option | Description |\n| ------:| -----------:|\n| data | path to data files to supply the data that will be passed into templates. |\n| engine | engine to be used for processing templates. Handlebars is the default. |\n| ext | extension to be used for dest files. |\n\n## Links\n\n[link text](https://github.com)\n\n[link with title](https://github.com \u0022title text!\u0022)\n\nAuto converted link https://github.com\n\n## Images\n\n![Minion](https://octodex.github.com/images/minion.png)\n![Stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg \u0022The Stormtroopocat\u0022)\n\nLike links, Images also have a footnote style syntax\n\n![Alt text][id]\n\nWith a reference later in the document defining the URL location:\n\n[id]: https://octodex.github.com/images/dojocat.jpg \u0022The Dojocat\u0022\n";
+    //private static readonly string _starterText = "";
+    private static string _displayText = "";
+
+    private Blog _testBlog = new Blog()
+        {
+            Text = _starterText,
+            Title = "testing"
+        };
+
+    private MudTextField<string>? _textField;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _textField?.SetText(_starterText);
+            _displayText = _testBlog.TextFormated;
+        }
+        JS.InvokeVoidAsync("Prism.highlightAll");
+    }
+
+    private void UpdatedText(string value)
+    {
+        _testBlog.Text = value;
+        _displayText = _testBlog.TextFormated;
+    }
+
+    private async Task CreateBlog()
+    {
+        //await _blogApi.SubmitBlogAsync(_testBlog);
+    }
+}

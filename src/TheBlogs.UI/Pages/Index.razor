@@ -1,17 +1,56 @@
 ﻿@page "/"
 @inject HttpClient Http
 
-@foreach (var blog in _apiResponse.Data)
+@if (_blogs.Count() == 0)
 {
-    <p>@blog.Title</p>
+    <MudPaper Class="pa-4 my-2" Elevation="3">
+        <MudText>No Blogs to Display</MudText>
+    </MudPaper>
+}
+else
+{
+    @foreach (var blog in _blogs)
+    {
+        <MudPaper Class="pa-4 my-2" Elevation="3">
+            <MudText Typo="Typo.h4">@blog.Title</MudText>
+            <MudText Typo="Typo.subtitle1">@blog.WriterId</MudText>
+            <MudDivider DividerType="DividerType.FullWidth" Class="my-2" />
+            <p>@((MarkupString)blog.TextFormated)</p>
+        </MudPaper>
+    }
 }
 
+<MudPaper Class="pa-4 my-2" Elevation="3">
+    <MudText Typo="Typo.subtitle1">
+        <MudAvatar Size="Size.Small" Color="Color.Primary">M</MudAvatar>
+        Gavin Steinhoff
+    </MudText>
+    <MudText Typo="Typo.h4" Class="my-2">Test Title</MudText>
+    <MudDivider DividerType="DividerType.FullWidth" Class="my-2" />
+    <MudText>The war among frameworks is a hot topic in the JavaScript community, and it is one of many holy wars in the profession. Since the beginning, with jQuery, followed by AngularJS to modern frameworks, the war has been fierce.</MudText>
+    <MudText Typo="Typo.h5">Contestants</MudText>
+    <MudText>The war among frameworks is a hot topic in the JavaScript community, and it is one of many holy wars in the profession. Since the beginning, with jQuery, followed by AngularJS to modern frameworks, the war has been fierce.</MudText>
+</MudPaper>
+
 @code {
-    private ApiResponse<Blog[]> _apiResponse { get; set; } = new ApiResponse<Blog[]> { Data = new Blog[0] };
+    private Blog[] _blogs { get; set; } = new Blog[0];
+    private bool _loading { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
     {
-        _apiResponse = await Http.GetFromJsonAsync<ApiResponse<Blog[]>>("http://localhost:7071/api/blogs") ?? new ApiResponse<Blog[]> { Data = new Blog[0] };
+        try
+        {
+            var apiResponse = await Http.GetFromJsonAsync<ApiResponse<Blog[]>>("http://localhost:7071/api/blogs");
+            if (apiResponse is not null)
+            {
+                _blogs = apiResponse.Data ?? new Blog[0];
+                _loading = false;
+            }
+        }
+        catch
+        {
+            _blogs = new Blog[0];
+            _loading = false;
+        }
     }
-
 }
